@@ -1,0 +1,114 @@
+---
+# task install
+
+# Selinux
+- name: disable selinux
+  selinux:
+    state: disabled
+
+# Firewalld configuration
+- name: start and enable firewalld
+  service:
+    name: firewalld
+    state: started
+    enabled: yes
+
+- name: open ssh and https
+  firewalld:
+    service: "{{ item }}"
+    permanent: true
+    immediate: true
+    state: enabled
+  with_items:
+    - https
+    - ssh
+
+# YUM repositories
+- name: install epel repo
+  yum:
+    name: epel-release
+    state: latest
+
+- name: install google64 repo
+  yum_repository:
+    name: google64
+    description: Google - x86_64
+    baseurl: http://dl.google.com/linux/rpm/stable/x86_64
+    enabled: yes
+    gpgcheck: yes
+    gpgkey: https://dl-ssl.google.com/linux/linux_signing_key.pub
+    file: google-x86_64 
+    
+# Browsers installation
+- name: install firefox and google-chrome-stable
+  yum:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - firefox
+    - google-chrome-stable
+
+# Virtualenv configuration
+- name: install python-virtualenv
+  yum:
+    name: python-virtualenv
+    state: latest
+
+- name: add the user 'eoa' and creates its home directory
+  user:
+    name: "{{eoa_user}}"
+    comment: EyesOfApplication user
+    home: "{{eoa_dir}}"
+
+- name: check virtualenv directory
+  file:
+    path: "{{eoa_dir_venv}}"
+    state: directory
+  become_user: "{{eoa_user}}"
+
+# Pip installation
+- name: check pip is the latest version
+  pip:
+    name: pip
+    state: latest
+    virtualenv_site_packages: yes
+    virtualenv: "{{eoa_dir_venv}}"
+    umask: "0022"
+  register: _pip
+  become_user: "{{eoa_user}}"
+
+# Selenium installation
+- name: check selenium is installed
+  pip:
+    name: selenium
+    state: latest
+    virtualenv: "{{eoa_dir_venv}}"
+    umask: "0022"
+  become_user: "{{eoa_user}}"
+
+- name: download selenium drivers
+  get_url: 
+    url: "{{ item }}"
+    dest: /tmp
+  with_items:
+    - "https://github.com/mozilla/geckodriver/releases/download/v{{eoa_firefox_version}}/geckodriver-v{{eoa_firefox_version}}-linux64.tar.gz"  
+    - "https://chromedriver.storage.googleapis.com/{{eoa_chrome_version}}/chromedriver_linux64.zip"
+  
+- name: install gtar and unzip
+  yum:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - tar
+    - unzip
+
+- name : unarchive selenium drivers 
+  unarchive:
+    src: "/tmp/{{ item }}" 
+    dest: "{{eoa_dir_venv}}/bin"
+    owner: "{{eoa_user}}"
+    group: "{{eoa_user}}"
+    remote_src: yes
+  with_items:
+    - "geckodriver-v{{eoa_firefox_version}}-linux64.tar.gz"
+    - "chromedriver_linux64.zip"
