@@ -13,6 +13,7 @@
     state: started
     enabled: yes
 
+#Enable SSH and HTTPS services
 - name: open ssh and https
   firewalld:
     service: "{{ item }}"
@@ -56,15 +57,15 @@
 
 - name: add the user 'eoa' and creates its home directory
   user:
-    name: "{{eoa_user}}"
+    name: "{{ eoa_user }}"
     comment: EyesOfApplication user
-    home: "{{eoa_dir}}"
+    home: "{{ eoa_dir }}"
 
 - name: check virtualenv directory
   file:
-    path: "{{eoa_dir_venv}}"
+    path: "{{ eoa_dir_venv }}"
     state: directory
-  become_user: "{{eoa_user}}"
+  become_user: "{{ eoa_user }}"
 
 # Pip installation
 - name: check pip is the latest version
@@ -72,19 +73,19 @@
     name: pip
     state: latest
     virtualenv_site_packages: yes
-    virtualenv: "{{eoa_dir_venv}}"
+    virtualenv: "{{ eoa_dir_venv }}"
     umask: "0022"
   register: _pip
-  become_user: "{{eoa_user}}"
+  become_user: "{{ eoa_user }}"
 
 # Selenium installation
 - name: check selenium is installed
   pip:
     name: selenium
     state: latest
-    virtualenv: "{{eoa_dir_venv}}"
+    virtualenv: "{{ eoa_dir_venv }}"
     umask: "0022"
-  become_user: "{{eoa_user}}"
+  become_user: "{{ eoa_user }}"
 
 - name: download selenium drivers
   get_url: 
@@ -105,10 +106,44 @@
 - name : unarchive selenium drivers 
   unarchive:
     src: "/tmp/{{ item }}" 
-    dest: "{{eoa_dir_venv}}/bin"
-    owner: "{{eoa_user}}"
-    group: "{{eoa_user}}"
+    dest: "{{ eoa_dir_venv }}/bin"
+    owner: "{{ eoa_user }}"
+    group: "{{ eoa_user }}"
     remote_src: yes
   with_items:
-    - "geckodriver-v{{eoa_firefox_version}}-linux64.tar.gz"
+    - "geckodriver-v{{ eoa_firefox_version }}-linux64.tar.gz"
     - "chromedriver_linux64.zip"
+
+  # Installing EOA
+- name: clone eyesofapplication project from gitlab
+  become: false
+  local_action:
+    module: git
+    repo: "{{ eoa_saas_git_url }}"
+    version: master
+    dest: "{{ eoa_git_dir }}"
+    update: yes
+    force: yes
+    accept_hostkey: yes
+  run_once: yes
+
+- name: install files
+  synchronize:
+    src: "{{ eoa_git_dir}}"
+    dest: "{{ eoa_dir }}"
+    archive: no
+    recursive: yes
+
+- name: set owner and group
+  file:
+    path: "{{ eoa_dir }}/eyesofapplication-saas"
+    owner: "{{ eoa_user }}"
+    group: "{{ eoa_user }}"
+    recurse: yes
+
+- name: set rights
+  file:
+    path: "{{ eoa_dir }}/eyesofapplication-saas"
+    mode: 0755
+    recurse: yes
+
