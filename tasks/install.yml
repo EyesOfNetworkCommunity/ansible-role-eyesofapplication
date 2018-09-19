@@ -13,7 +13,7 @@
     state: started
     enabled: yes
 
-#Enable SSH and HTTPS services
+# Enable SSH and HTTPS services
 - name: open ssh and https
   firewalld:
     service: "{{ item }}"
@@ -24,12 +24,22 @@
     - https
     - ssh
 
-# YUM repositories
+# Prerequisites
 - name: install epel repo
   yum:
     name: epel-release
     state: latest
+  
+- name: install prerequisites
+  yum:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - python-virtualenv
+    - tar
+    - unzip
 
+# Browsers installation
 - name: install google64 repo
   yum_repository:
     name: google64
@@ -39,8 +49,7 @@
     gpgcheck: yes
     gpgkey: https://dl-ssl.google.com/linux/linux_signing_key.pub
     file: google-x86_64 
-    
-# Browsers installation
+
 - name: install firefox and google-chrome-stable
   yum:
     name: "{{ item }}"
@@ -50,11 +59,6 @@
     - google-chrome-stable
 
 # Virtualenv configuration
-- name: install python-virtualenv
-  yum:
-    name: python-virtualenv
-    state: latest
-
 - name: add the user 'eoa' and creates its home directory
   user:
     name: "{{ eoa_user }}"
@@ -78,6 +82,17 @@
   register: _pip
   become_user: "{{ eoa_user }}"
 
+- name: check python prerequisites are installed
+  pip:
+    name: "{{ item }}"
+    state: latest
+    virtualenv: "{{ eoa_dir_venv }}"
+    umask: "0022"
+  become_user: "{{ eoa_user }}"
+  with_items:
+    - coloredlogs
+    - PyYAML
+ 
 # Selenium installation
 - name: check selenium is installed
   pip:
@@ -95,14 +110,6 @@
     - "https://github.com/mozilla/geckodriver/releases/download/v{{eoa_firefox_version}}/geckodriver-v{{eoa_firefox_version}}-linux64.tar.gz"  
     - "https://chromedriver.storage.googleapis.com/{{eoa_chrome_version}}/chromedriver_linux64.zip"
   
-- name: install gtar and unzip
-  yum:
-    name: "{{ item }}"
-    state: latest
-  with_items:
-    - tar
-    - unzip
-
 - name : unarchive selenium drivers 
   unarchive:
     src: "/tmp/{{ item }}" 
@@ -120,7 +127,7 @@
   local_action:
     module: git
     repo: "{{ eoa_saas_git_url }}"
-    version: master
+    version: "{{ eoa_git_version }}"
     dest: "{{ eoa_git_dir }}"
     update: yes
     force: yes
@@ -129,21 +136,14 @@
 
 - name: install files
   synchronize:
-    src: "{{ eoa_git_dir}}"
-    dest: "{{ eoa_dir }}"
+    src: "{{ eoa_git_dir}}/"
+    dest: "{{ eoa_dir }}/"
     archive: no
     recursive: yes
 
 - name: set owner and group
   file:
-    path: "{{ eoa_dir }}/eyesofapplication-saas"
+    path: "{{ eoa_dir }}"
     owner: "{{ eoa_user }}"
     group: "{{ eoa_user }}"
     recurse: yes
-
-- name: set rights
-  file:
-    path: "{{ eoa_dir }}/eyesofapplication-saas"
-    mode: 0755
-    recurse: yes
-

@@ -4,6 +4,7 @@
 eoa_dir: /srv/eyesofapplication
 eoa_dir_venv: "{{eoa_dir}}/selenium"
 eoa_git_dir: /tmp/eyesofapplication-saas
+eoa_git_version: master
 eoa_user: eoa
 eoa_chrome_version: 2.41
 eoa_firefox_version: 0.21.0
