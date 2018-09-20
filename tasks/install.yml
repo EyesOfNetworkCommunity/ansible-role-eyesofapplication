@@ -92,6 +92,7 @@
   with_items:
     - coloredlogs
     - PyYAML
+    - validators
  
 # Selenium installation
 - name: check selenium is installed
