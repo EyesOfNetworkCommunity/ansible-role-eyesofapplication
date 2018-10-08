@@ -91,6 +91,7 @@
   become_user: "{{ eoa_user }}"
   with_items:
     - coloredlogs
+    - cryptography 
     - PyYAML
     - validators
  
