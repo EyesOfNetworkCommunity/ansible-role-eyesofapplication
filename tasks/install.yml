@@ -94,6 +94,7 @@
     - cryptography 
     - PyYAML
     - validators
+    - oyaml
  
 # Selenium installation
 - name: check selenium is installed
