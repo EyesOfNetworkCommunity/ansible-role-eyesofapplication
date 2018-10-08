@@ -13,8 +13,8 @@
     state: started
     enabled: yes
 
-# Enable SSH and HTTPS services
-- name: open ssh and https
+# Enable HTTPS service
+- name: open https
   firewalld:
     service: "{{ item }}"
     permanent: true
@@ -22,7 +22,7 @@
     state: enabled
   with_items:
     - https
-    - ssh
+    # - ssh
 
 # Prerequisites
 - name: install epel repo
