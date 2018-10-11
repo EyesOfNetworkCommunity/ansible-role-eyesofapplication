@@ -149,5 +149,5 @@
     path: "{{ eoa_dir }}"
     owner: "{{ eoa_user }}"
     group: "{{ eoa_user }}"
-    mode: 0751
+    mode: 0755
     recurse: yes
