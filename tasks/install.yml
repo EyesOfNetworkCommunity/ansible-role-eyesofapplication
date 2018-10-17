@@ -95,6 +95,7 @@
     - PyYAML
     - validators
     - oyaml
+    - ruamel.yaml
  
 # Selenium installation
 - name: check selenium is installed
