@@ -144,6 +144,7 @@
     dest: "{{ eoa_dir }}/"
     archive: no
     recursive: yes
+  run_once: yes
 
 - name: set owner and group
   file:
