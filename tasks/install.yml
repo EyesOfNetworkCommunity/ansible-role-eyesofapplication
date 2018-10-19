@@ -144,10 +144,6 @@
     dest: "{{ eoa_dir }}/"
     archive: no
     recursive: yes
-    rsync_opts:
-      - "--exclude=conf/eoa.yml"
-      - "--exclude=apps/*.yml"
-
 
 - name: set owner and group
   file:
