@@ -144,6 +144,27 @@
     dest: "{{ eoa_dir }}/"
     archive: no
     recursive: yes
+<<<<<<< HEAD
+    rsync_opts:
+      - "--exclude=conf/eoa.yml"
+
+- name: check if eoa.yml is installed
+  stat:
+    path: /srv/eyesofapplication/conf/eoa.yml
+  register: stat_result
+
+- name: install eoa.yml if not installed
+  synchronize:
+    src: "{{ eoa_git_dir}}/"
+    dest: "{{ eoa_dir }}/"
+    archive: no
+    recursive: yes
+    rsync_opts:
+      - "--exclude=apps/"
+      - "--exclude=eoa/"
+      - "--exclude=bin/"
+      - "--exclude=logs/"
+  when: stat_result.stat.exists == False
 
 - name: set owner and group
   file:
