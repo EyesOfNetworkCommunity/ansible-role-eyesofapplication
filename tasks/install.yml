@@ -144,7 +144,6 @@
     dest: "{{ eoa_dir }}/"
     archive: no
     recursive: yes
-<<<<<<< HEAD
     rsync_opts:
       - "--exclude=conf/eoa.yml"
 
