@@ -158,11 +158,6 @@
     dest: "{{ eoa_dir }}/"
     archive: no
     recursive: yes
-    rsync_opts:
-      - "--exclude=apps/"
-      - "--exclude=eoa/"
-      - "--exclude=bin/"
-      - "--exclude=logs/"
   when: stat_result.stat.exists == False
 
 - name: set owner and group
