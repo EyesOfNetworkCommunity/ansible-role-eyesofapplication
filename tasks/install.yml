@@ -22,7 +22,6 @@
     state: enabled
   with_items:
     - https
-    # - ssh
 
 # Prerequisites
 - name: install epel repo
@@ -167,3 +166,12 @@
     group: "{{ eoa_user }}"
     mode: 0755
     recurse: yes
+
+ # Configure sudo access if eon
+- name: set sudo access for nagios user
+  lineinfile:
+    path: /etc/sudoers
+    state: present
+    line: 'nagios ALL=NOPASSWD:{{eoa_dir}}/bin/eoa.py'
+    validate: '/usr/sbin/visudo -cf %s'
+  when: eoa_is_eon
