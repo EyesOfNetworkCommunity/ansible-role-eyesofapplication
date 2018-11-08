@@ -123,7 +123,7 @@
     - "geckodriver-v{{ eoa_firefox_version }}-linux64.tar.gz"
     - "chromedriver_linux64.zip"
 
-  # Installing EOA
+# Installing EOA
 - name: clone eyesofapplication project from gitlab
   become: false
   local_action:
@@ -165,7 +165,7 @@
     group: "{{ eoa_user }}"
     recurse: yes
 
- # Configure sudo access if eon
+# Configure sudo access if eon
 - name: set sudo access for nagios user
   lineinfile:
     path: /etc/sudoers
