@@ -10,3 +10,4 @@ eoa_chrome_version: 2.41
 eoa_firefox_version: 0.21.0
 eoa_saas_git_url: https://gitlab.cloudbuilder.axians.com/clients/eyesofapplication-saas.git
 eoa_is_eon: false
+eoa_firewalld: true

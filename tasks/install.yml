@@ -6,22 +6,21 @@
   selinux:
     state: disabled
 
-# Firewalld configuration
+# Firewalld configuration if eoa_firewalld is true
 - name: start and enable firewalld
   service:
     name: firewalld
     state: started
     enabled: yes
+  when: eoa_firewalld
 
 # Enable HTTPS service
 - name: open https
   firewalld:
-    service: "{{ item }}"
+    service: https
     permanent: true
     immediate: true
     state: enabled
-  with_items:
-    - https
 
 # Prerequisites
 - name: install epel repo
