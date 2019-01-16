@@ -30,12 +30,8 @@
   
 - name: install prerequisites
   yum:
-    name: "{{ item }}"
+    name: ['python-virtualenv', 'tar', 'unzip']
     state: latest
-  with_items:
-    - python-virtualenv
-    - tar
-    - unzip
 
 # Browsers installation
 - name: install google64 repo
@@ -50,11 +46,8 @@
 
 - name: install firefox and google-chrome-stable
   yum:
-    name: "{{ item }}"
+    name: ['firefox', 'google-chrome-stable']
     state: latest
-  with_items:
-    - firefox
-    - google-chrome-stable
 
 # Virtualenv configuration
 - name: add the user 'eoa' and creates its home directory
@@ -82,19 +75,12 @@
 
 - name: check python prerequisites are installed
   pip:
-    name: "{{ item }}"
+    name: ['coloredlogs', 'cryptography', 'PyYAML', 'validators', 'oyaml', 'ruamel.yaml']
     state: latest
     virtualenv: "{{ eoa_dir_venv }}"
     umask: "0022"
   become_user: "{{ eoa_user }}"
-  with_items:
-    - coloredlogs
-    - cryptography 
-    - PyYAML
-    - validators
-    - oyaml
-    - ruamel.yaml
- 
+
 # Selenium installation
 - name: check selenium is installed
   pip:
