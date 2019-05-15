@@ -7,27 +7,32 @@
     state: disabled
 
 # Firewalld configuration if eoa_firewalld is true
-- name: start and enable firewalld
-  service:
-    name: firewalld
-    state: started
-    enabled: yes
+- name: manage firewalld
+  block:
+    - name: install firewalld
+      yum:
+        name: firewalld
+        state: present
+    - name: start and enable firewalld
+      service:
+        name: firewalld
+        state: started
+        enabled: yes
+    # Enable HTTPS service
+    - name: open https
+      firewalld:
+        service: https
+        permanent: true
+        immediate: true
+        state: enabled
   when: eoa_firewalld
-
-# Enable HTTPS service
-- name: open https
-  firewalld:
-    service: https
-    permanent: true
-    immediate: true
-    state: enabled
 
 # Prerequisites
 - name: install epel repo
   yum:
     name: epel-release
     state: latest
-  
+
 - name: install prerequisites
   yum:
     name: ['python-virtualenv', 'tar', 'unzip']
@@ -42,7 +47,7 @@
     enabled: yes
     gpgcheck: yes
     gpgkey: https://dl-ssl.google.com/linux/linux_signing_key.pub
-    file: google-x86_64 
+    file: google-x86_64
 
 - name: install firefox and google-chrome-stable
   yum:
@@ -91,16 +96,16 @@
   become_user: "{{ eoa_user }}"
 
 - name: download selenium drivers
-  get_url: 
+  get_url:
     url: "{{ item }}"
     dest: /tmp
   with_items:
     - "https://github.com/mozilla/geckodriver/releases/download/v{{eoa_firefox_version}}/geckodriver-v{{eoa_firefox_version}}-linux64.tar.gz"  
     - "https://chromedriver.storage.googleapis.com/{{eoa_chrome_version}}/chromedriver_linux64.zip"
-  
-- name : unarchive selenium drivers 
+
+- name : unarchive selenium drivers
   unarchive:
-    src: "/tmp/{{ item }}" 
+    src: "/tmp/{{ item }}"
     dest: "{{ eoa_dir_venv }}/bin"
     owner: "{{ eoa_user }}"
     group: "{{ eoa_user }}"
