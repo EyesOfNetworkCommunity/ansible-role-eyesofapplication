@@ -6,8 +6,8 @@ eoa_dir_venv: "{{eoa_dir}}/selenium"
 eoa_git_dir: /tmp/eyesofapplication-saas
 eoa_git_version: master
 eoa_user: eoa
-eoa_chrome_version: 2.45
-eoa_firefox_version: 0.23.0
+eoa_chrome_version: 74.0.3729.6
+eoa_firefox_version: 0.24.0
 eoa_saas_git_url: https://gitlab.cloudbuilder.axians.com/clients/eyesofapplication-saas.git
 eoa_is_eon: false
 eoa_firewalld: true
