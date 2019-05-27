@@ -25,7 +25,7 @@
         permanent: true
         immediate: true
         state: enabled
-  when: eoa_firewalld
+  when: eoa_firewalld | bool
 
 # Prerequisites
 - name: install epel repo
@@ -163,4 +163,4 @@
     state: present
     line: 'nagios ALL=NOPASSWD:{{eoa_dir}}/bin/eoa.py'
     validate: '/usr/sbin/visudo -cf %s'
-  when: eoa_is_eon
+  when: eoa_is_eon | bool
